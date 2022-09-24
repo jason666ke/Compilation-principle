@@ -5,6 +5,7 @@ import cn.edu.hitsz.compiler.utils.FileUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,6 +17,8 @@ import java.util.Map;
  */
 public class SymbolTable {
 
+    Map<String, SourceCodeType> symbolTable = new HashMap<>();
+
     /**
      * 获取符号表中已有的条目
      *
@@ -24,18 +27,30 @@ public class SymbolTable {
      * @throws RuntimeException 该符号在表中不存在
      */
     public SymbolTableEntry get(String text) {
-        throw new NotImplementedException();
+        // 表中没有就抛异常
+        if (!has(text)) {
+            throw new RuntimeException("No such symbol in symbol table!");
+        }
+        else {
+            return new SymbolTableEntry(text);
+        }
     }
 
     /**
      * 在符号表中新增条目
      *
      * @param text 待加入符号表中的新符号的文本表示
-     * @return 该符号在符号表中对应的新条目
      * @throws RuntimeException 该符号已在表中存在
      */
-    public SymbolTableEntry add(String text) {
-        throw new NotImplementedException();
+    public void add(String text) {
+        // 如果已经在表中存在
+        if (has(text)) {
+            throw new RuntimeException();
+        }
+        else {
+            SymbolTableEntry symbolTableEntry = new SymbolTableEntry(text);
+            symbolTable.put(symbolTableEntry.getText(), symbolTableEntry.getType());
+        }
     }
 
     /**
@@ -45,7 +60,7 @@ public class SymbolTable {
      * @return 该符号的条目是否位于符号表中
      */
     public boolean has(String text) {
-        throw new NotImplementedException();
+        return symbolTable.containsKey(text);
     }
 
     /**
@@ -54,7 +69,12 @@ public class SymbolTable {
      * @return 符号表的所有条目
      */
     private Map<String, SymbolTableEntry> getAllEntries() {
-        throw new NotImplementedException();
+        Map<String, SymbolTableEntry> symbolTableEntryMap = new HashMap<>();
+        for (String key : symbolTable.keySet()) {
+            SymbolTableEntry symbolTableEntry = new SymbolTableEntry(key);
+            symbolTableEntryMap.put(key, symbolTableEntry);
+        }
+        return symbolTableEntryMap;
     }
 
     /**

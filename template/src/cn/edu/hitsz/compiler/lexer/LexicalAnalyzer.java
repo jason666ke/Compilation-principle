@@ -35,7 +35,6 @@ public class LexicalAnalyzer {
      * @param path 路径
      */
     public void loadFile(String path) throws IOException {
-        // TODO: 词法分析前的缓冲区实现
         // 可自由实现各类缓冲区
         // 或直接采用完整读入方法
 
@@ -50,7 +49,6 @@ public class LexicalAnalyzer {
             textContent.add(line);
         }
         br.close();
-//        throw new NotImplementedException();
     }
 
     /**
@@ -59,12 +57,11 @@ public class LexicalAnalyzer {
      */
     public static List<List<TokenKind>> tokenKindList = new ArrayList<>();
     public void run() {
-        // TODO: 自动机实现的词法分析过程
         for (String text : textContent){
+            // 利用写好的自动机对每一行文本进行分析
+            // 返回行文本对应的tokenKind
             tokenKindList.add(LexicalAnalysisAutomata.textAnalyze(text));
         }
-//        System.out.println(tokenKindList);
-//        throw new NotImplementedException();
     }
 
 
@@ -75,7 +72,6 @@ public class LexicalAnalyzer {
      * @return Token 列表
      */
     public Iterable<Token> getTokens() {
-        // TODO: 从词法分析过程中获取 Token 列表
         // 词法分析过程可以使用 Stream 或 Iterator 实现按需分析
         // 亦可以直接分析完整个文件
         // 总之实现过程能转化为一列表即可
@@ -93,6 +89,10 @@ public class LexicalAnalyzer {
                 // 如果是标识符或常数需要生成复杂的token
                 if (curTokenKind.getTermName().equals("id") || curTokenKind.getTermName().equals("IntConst")) {
                     curToken= Token.normal(curTokenKind, wordArray[i]);
+                    // 如果是标识符，更新符号表
+                    if (curTokenKind.getTermName().equals("id")) {
+                        updateSymbolTable(wordArray[i]);
+                    }
                 }
                 // 否则则生成简单的token
                 else {
@@ -107,8 +107,6 @@ public class LexicalAnalyzer {
         tokenList.add(Token.eof());
 
         return tokenList;
-//        throw new NotImplementedException();
-
     }
 
     public void dumpTokens(String path) {
@@ -116,6 +114,18 @@ public class LexicalAnalyzer {
             path,
             StreamSupport.stream(getTokens().spliterator(), false).map(Token::toString).toList()
         );
+    }
+
+    /**
+     * 更新符号表
+     * @param text 对应的标识符
+     */
+    public void updateSymbolTable(String text) {
+        try {
+            symbolTable.add(text);
+        }catch (RuntimeException e) {
+            System.out.println("Symbol Table Already Contains that key!");
+        }
     }
 
 
