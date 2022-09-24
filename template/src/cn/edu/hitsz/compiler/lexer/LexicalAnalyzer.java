@@ -4,7 +4,12 @@ import cn.edu.hitsz.compiler.NotImplementedException;
 import cn.edu.hitsz.compiler.symtab.SymbolTable;
 import cn.edu.hitsz.compiler.utils.FileUtils;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.StreamSupport;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * TODO: 实验一: 实现词法分析
@@ -21,28 +26,49 @@ public class LexicalAnalyzer {
         this.symbolTable = symbolTable;
     }
 
+    // 缓冲区，按行输入到这个缓冲区中
+    private List<String> textContent = new LinkedList<>();
 
     /**
      * 从给予的路径中读取并加载文件内容
-     *
+     * 按行读取文件内容
      * @param path 路径
      */
-    public void loadFile(String path) {
+    public void loadFile(String path) throws IOException {
         // TODO: 词法分析前的缓冲区实现
         // 可自由实现各类缓冲区
         // 或直接采用完整读入方法
-        throw new NotImplementedException();
+
+        File file = new File(path);
+        FileInputStream fis = new FileInputStream(file);
+        InputStreamReader isr = new InputStreamReader(fis);
+        BufferedReader br = new BufferedReader(isr);
+
+        // 文本文件中每行数据
+        String line;
+        while ((line = br.readLine()) != null) {
+            textContent.add(line);
+        }
+        br.close();
+//        throw new NotImplementedException();
     }
 
     /**
      * 执行词法分析, 准备好用于返回的 token 列表 <br>
      * 需要维护实验一所需的符号表条目, 而得在语法分析中才能确定的符号表条目的成员可以先设置为 null
      */
+    public static List<List<TokenKind>> tokenKindList = new ArrayList<>();
     public void run() {
         // TODO: 自动机实现的词法分析过程
-        throw new NotImplementedException();
+        for (String text : textContent){
+            tokenKindList.add(LexicalAnalysisAutomata.textAnalyze(text));
+        }
+//        System.out.println(tokenKindList);
+//        throw new NotImplementedException();
     }
 
+
+    public static List<Token> tokenList = new ArrayList<>();
     /**
      * 获得词法分析的结果, 保证在调用了 run 方法之后调用
      *
@@ -53,7 +79,36 @@ public class LexicalAnalyzer {
         // 词法分析过程可以使用 Stream 或 Iterator 实现按需分析
         // 亦可以直接分析完整个文件
         // 总之实现过程能转化为一列表即可
-        throw new NotImplementedException();
+        for (int index = 0; index < tokenKindList.size(); index ++) {
+
+            String text = textContent.get(index);
+            List<TokenKind> textTokenKind = tokenKindList.get(index);
+
+            // text中是按照空格将不同类型的文本隔开的
+            String[] wordArray = StringUtils.split(text, " ;");
+
+            for (int i = 0; i < wordArray.length; i++) {
+                TokenKind curTokenKind = textTokenKind.get(i);
+                Token curToken;
+                // 如果是标识符或常数需要生成复杂的token
+                if (curTokenKind.getTermName().equals("id") || curTokenKind.getTermName().equals("IntConst")) {
+                    curToken= Token.normal(curTokenKind, wordArray[i]);
+                }
+                // 否则则生成简单的token
+                else {
+                    curToken = Token.simple(curTokenKind);
+                }
+                tokenList.add(curToken);
+            }
+            // 还需要加上分号
+            tokenList.add(Token.simple(textTokenKind.get(wordArray.length)));
+        }
+        // 最后加上eof
+        tokenList.add(Token.eof());
+
+        return tokenList;
+//        throw new NotImplementedException();
+
     }
 
     public void dumpTokens(String path) {
