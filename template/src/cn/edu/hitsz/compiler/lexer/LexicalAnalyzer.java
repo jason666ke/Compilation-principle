@@ -124,7 +124,7 @@ public class LexicalAnalyzer {
         try {
             symbolTable.add(text);
         }catch (RuntimeException e) {
-            System.out.println("Symbol Table Already Contains that key!");
+//            System.out.println("Symbol Table Already Contains that key!");
         }
     }
 
