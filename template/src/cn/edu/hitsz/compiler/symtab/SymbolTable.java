@@ -1,12 +1,8 @@
 package cn.edu.hitsz.compiler.symtab;
 
-import cn.edu.hitsz.compiler.NotImplementedException;
 import cn.edu.hitsz.compiler.utils.FileUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 符号表
@@ -54,6 +50,47 @@ public class SymbolTable {
     }
 
     /**
+     * 删除符号表中指定条目
+     * @param text  符号表中符号的文本表示
+     * @throws RuntimeException 符号表中不存在该符号
+     */
+    public void remove(String text) {
+        // 如果表中不存在该条目
+        if (!has(text)) {
+            throw new RuntimeException();
+        } else {
+            symbolTable.remove(text);
+        }
+    }
+
+    /**
+     * 获取符号表中第一个类型为null的元素key值
+     * @return 第一个类型为null的元素key值
+     */
+    public String getFirstNullTypeSymbolName() {
+        for (String key : symbolTable.keySet()) {
+            SourceCodeType type = symbolTable.get(key);
+            if (type == null) {
+                return key;
+            }
+        }
+        // 没有为null的元素
+        throw new RuntimeException();
+    }
+
+    /**
+     * 更新指定变量的type
+     * @param text 需要改变的变量名字
+     * @param type 变量类型
+     */
+    public void setSelectedSymbolType (String text, SourceCodeType type) {
+        symbolTable.put(text, type);
+    }
+
+    public SourceCodeType getSymbolType (String text) {
+        return symbolTable.get(text);
+    }
+    /**
      * 判断符号表中有无条目
      *
      * @param text 待判断符号的文本表示
@@ -72,6 +109,7 @@ public class SymbolTable {
         Map<String, SymbolTableEntry> symbolTableEntryMap = new HashMap<>();
         for (String key : symbolTable.keySet()) {
             SymbolTableEntry symbolTableEntry = new SymbolTableEntry(key);
+            symbolTableEntry.setType(getSymbolType(key));
             symbolTableEntryMap.put(key, symbolTableEntry);
         }
         return symbolTableEntryMap;
