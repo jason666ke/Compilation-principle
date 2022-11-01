@@ -12,6 +12,14 @@ public class IRImmediate implements IRValue {
         return value;
     }
 
+    @Override
+    /**
+     * 为了代码简洁，在IRvalue中加入了抽象方法，这里只需实现空方法即可
+     */
+    public String getName() {
+        return null;
+    }
+
     private final int value;
 
     @Override

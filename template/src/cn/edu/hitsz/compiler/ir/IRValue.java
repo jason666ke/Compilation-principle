@@ -11,4 +11,8 @@ public interface IRValue {
     default boolean isImmediate() {
         return this instanceof IRImmediate;
     }
+
+    int getValue();
+
+    String getName();
 }

@@ -46,7 +46,6 @@ public class IRGenerator implements ActionObserver {
 
     @Override
     public void whenReduce(Status currentStatus, Production production) {
-        // TODO
         switch (production.index()) {
             case 6 -> { // S -> id = E
                 /* 生成赋值语句中间代码 */

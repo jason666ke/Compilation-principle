@@ -24,6 +24,14 @@ public class IRVariable implements IRValue {
         return new IRVariable("$" + count++);
     }
 
+    @Override
+    /**
+     * 为了代码简洁，在IRvalue中加入了抽象方法接口，但是IRvariable没有对应属性，因此实现一个空方法即可
+     */
+    public int getValue() {
+        return 0;
+    }
+
     public String getName() {
         return name;
     }
